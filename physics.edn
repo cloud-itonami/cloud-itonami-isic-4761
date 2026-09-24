@@ -1,0 +1,33 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README "Robotics premise": a robot may perform the physical work of a
+;; bookstore / newsstand / stationery store (ISIC 4761) -- shelving,
+;; back-stock dispensing, restocking. Here: an arm shelving a stack of books
+;; on the top shelf, and a book truck (tall shelved cart) carrying back-stock
+;; to the floor -- books are dense, so a loaded truck is heavy and top-heavy.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-4761"
+ :cases
+ [{:id :book-stack-to-top-shelf
+   :kind :manipulator
+   :procedure "arm lifts a stack of books from the book truck onto the top shelf of a 1.8 m bookcase"
+   :params {:l1-m 0.55 :l2-m 0.50 :m1-kg 4.5 :m2-kg 3.0
+            :from [0.60 0.30] :to [0.25 0.95] :duration-s 2.5 :steps 500}
+   :sweep {:param :payload-kg :values [1.0 3.0 5.0 8.0 12.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 90.0 :basis "estimate: continuous shoulder torque of a ~7 kg-payload collaborative arm"}
+   :boundary {:lo 0.2 :hi 40.0}}
+  {:id :book-truck-restock-stop
+   :kind :transport
+   :procedure "robot pushes a three-shelf book truck with 120 kg of back-stock from the stockroom to the sales floor and brakes for a customer"
+   :params {:mass-kg 25.0 :payload-kg 120.0 :distance-m 40.0 :v-max-mps 0.8 :a-max-mps2 0.4
+            :drive-force-n 200.0 :crr 0.015 :cog-height-m 0.40 :payload-cog-height-m 0.80
+            :support-half-length-m 0.25 :max-time-s 600.0}
+   :sweep {:param :brake-decel-mps2 :values [0.5 1.0 1.5 2.0 2.5 3.0]}
+   :quantity :min-tipover-margin
+   :limit {:min 0.25 :basis "estimate: keep a 25 % stability reserve for a loaded tall book truck"}
+   :boundary {:lo 0.3 :hi 5.0}}]}
