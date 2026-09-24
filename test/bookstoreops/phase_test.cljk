@@ -1,6 +1,6 @@
 (ns bookstoreops.phase-test
   "Unit tests of `bookstoreops.phase` rollout logic."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [bookstoreops.phase :as phase]))
 
 (deftest phase-0-read-only
